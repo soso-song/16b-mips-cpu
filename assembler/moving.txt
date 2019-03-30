@@ -1,0 +1,107 @@
+mips_x16
+
+//load escape character into ram position 4 to show end of list of object
+lim 1023
+mv $1 $2
+sli $2 6
+mv $1 $2
+lim 63
+mv $1 $3
+add $2 $3
+sw 4
+
+//load dimensions of object
+lim 4
+mv $1 $2
+sli $2 8
+mv $1 $2
+lim 4
+mv $1 $3
+add $2 $3
+sw 3
+
+//load colour of the object
+lim 63
+sw 2
+
+//load initial value of location of object
+mv $0 $1
+sw 1
+
+//enable drawing of the object
+lim 1
+sw 0
+
+//load screen parameter values
+lim 160 //max y coordinate
+mv $1 $10
+lim 120 //max x coordinate
+mv $1 $9
+
+//load values to add
+lim 512
+mv $1 $8 //increment y value
+lim 1
+mv $1 $7 //increment x value
+
+//reserve a register for addition
+lim 1
+mv $1 $2
+
+//draw a row
+loop:
+add $2 $7
+sw 1 //update x coordinate
+mv $1 $2
+slt $2 $9
+bez loop //if its smaller than the max x, keep adding in loop
+
+nop
+
+//otherwise, increment y by 1
+add $2 $8
+sw 1 //update y coordinate
+mv $1 $2
+slt $2 $10
+bez loop //if its smaller than max y, go back to main loop
+
+nop
+
+//otherwise, reset the value in $2
+lim 120
+mv $1 $10
+sub $2 $10
+mv $1 $2 //reset coordinate values
+lim 63 //this is 6'b111111 the colour white
+mv $1 $4
+lw 0 //load the colour
+mv $1 $3
+seq $4 $3 //if the colour is white, the value in $1 will be 0
+bgz changeblk //branch if the colour is white
+nop
+bgz changewht //the colour is black so $1 has value 1, load colour white
+nop
+
+changewht: //change colour to white
+lim 63
+sw 2
+mv $0 $2
+jmp loop //go back to main loop
+
+changeblk: //change the colour to black
+mv $0 $1
+sw 2
+mv $0 $2
+jmp loop //go back to main loop
+
+
+
+
+
+
+
+
+
+
+
+

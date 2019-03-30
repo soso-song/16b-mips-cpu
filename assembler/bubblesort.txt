@@ -1,0 +1,149 @@
+mips_x16
+//code:
+//x = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, '\0']
+//i = 0
+//
+//while(i < len(x)){
+//	j = 0
+//	while(j < len(x)-i-1){
+//		if(x[j] > x[j+1]){
+//			x[j], x[j+1] = x[j+1], x[j]
+//		}
+//		j+=1
+//	}
+//	i+=1
+//}
+
+//populate the array
+lim 1
+mv $1 $11
+sw 10
+lim 7
+mv $1 $10
+sw 9
+lim 4
+mv $1 $9
+sw 8
+lim 5
+mv $1 $8
+sw 7
+lim 2
+mv $1 $7
+sw 6
+lim 6
+mv $1 $6
+sw 5
+lim 3
+mv $1 $5
+sw 4
+lim 8
+mv $1 $4
+sw 3
+lim 10
+mv $1 $3
+sw 2
+lim 9
+mv $1 $2
+sw 1
+//the array now looks like this [9, 10, 8, 3, 6, 2, 5, 4, 7, 1]
+//some nop so theres time for the user to pause program
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+//reset the register values
+mv $0 $11
+mv $0 $10
+mv $0 $9
+mv $0 $8
+mv $0 $7
+mv $0 $6
+mv $0 $5
+mv $0 $4
+mv $0 $3
+mv $0 $2
+mv $0 $1
+
+//store the length of the array (this could be calculated but this is just easier)
+lim 10 //change this depending on length of array
+mv $1 $3
+
+//create pointer to head of the array
+lim 1
+mv $1 $2 //move pointer to $2, it points to the head of the array
+
+
+mv $0 $4 //i = 0
+outer:
+mv $0 $5 //j = 0
+inner:
+
+//get x[j] and store in $7
+add $2 $5
+mv $1 $7
+mv $1 $8 //save copy of pointer + j into $8 for getting j+1
+lwr $7 $1
+mv $7 $9 //save copy of index j
+mv $1 $7
+
+//get x[j+1] and store in $8
+addi $8 1
+mv $1 $8
+lwr $8 $1
+mv $8 $10 //save copy of index j+1
+mv $1 $8
+
+//check if x[j] > x[j+1]
+slt $8 $7 //set $1 to 1 if x[j+1] < x[j], 0 otherwise
+bgz fi //skip the swap if 0 or in other words, skip the swap if x[j+1] > x[j]
+nop
+//swr $val $address (x[j], x[j+1] = x[j+1], x[j])
+swr $7 $10
+swr $8 $9
+fi:
+nop
+addi $5 1 //increment j
+mv $1 $5
+sub $3 $4 //calculate len(x)-i-1 into $6
+mv $1 $6
+subi $6 1
+mv $1 $6
+slt $5 $6 //check if j < len(x)-i-1
+bgz inner //if j < then branch back to inner loop
+nop
+
+addi $4 1 //increment i
+mv $1 $4
+slt $4 $3 //check if i < len(x)
+bgz outer //if i < len then loop again
+nop
+
+//reaching here means the sort has finished, move values to registers to display
+lw 10
+mv $1 $2
+lw 9
+mv $1 $3
+lw 8
+mv $1 $4
+lw 7
+mv $1 $5
+lw 6
+mv $1 $6
+lw 5
+mv $1 $7
+lw 4
+mv $1 $8
+lw 3
+mv $1 $9
+lw 2
+mv $1 $10
+lw 1
+mv $1 $11
+
+
+
+
+

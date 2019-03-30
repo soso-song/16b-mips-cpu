@@ -1,0 +1,22 @@
+mips_x16
+// NOTE: set the output register to 3
+
+//initialize
+start:
+lim 1023
+mv $1 $4
+
+lim 1
+mv $1 $2
+mv $1 $3
+
+begin: // main loop
+add $2 $3
+mv $3 $2
+mv $1 $3
+//loop portion
+slt $1 $4
+bgz begin
+
+mv $0 $3
+jmp start
