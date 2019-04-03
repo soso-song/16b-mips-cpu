@@ -1,24 +1,30 @@
-module CTRLUNIT(Instruction, ZFlag, JFlag, RamWriteEN, RamAddr, ALUCtrl, RegWriteEN, RegWriteAddr, RegAddrA, RegAddrB, Immediate, MuxA, MuxB, MuxC);
-	input [15:0] Instruction;
-	input ZFlag;
-	output reg RamWriteEN, RegWriteEN, JFlag;
-	output reg [9:0] RamAddr;
-	output reg [4:0] RegWriteAddr, RegAddrA, RegAddrB;
-	output reg [9:0] Immediate;
-	output reg [1:0] MuxA, MuxB, MuxC;
-	output reg [3:0] ALUCtrl;
-	
+module CTRLUNIT(
+	input [15:0] Instruction, // input instructions from memory
+	input ZFlag, // input zero flag from alu
+	output reg JFlag, // branch flag
+	output reg RamWriteEN, // ram control
+	output reg [9:0] RamAddr,
+	output reg [3:0] ALUCtrl, // alu control
+	output reg RegWriteEN,
+	output reg [4:0] RegWriteAddr,
+	output reg [4:0] RegAddrA, // addresses
+	output reg [4:0] RegAddrB,
+	output reg [9:0] Immediate, // immediate from instruction
+	output reg [1:0] MuxA, // mux controls
+	output reg [1:0] MuxB,
+	output reg [1:0] MuxC
+	);
+	// create wires for internal control
 	wire [5:0] Opcode;
 	wire [9:0] Address;
 	wire [4:0] AddressA, AddressB;
-	
+	// assign wires to parts of the instruction register
 	assign Opcode = Instruction[15:10]; // 6 bit
 	assign Address = Instruction[9:0]; // 10 bit
+	// break down instruction
 	assign AddressA = Address[9:5]; // 5 bit
 	assign AddressB = Address[4:0]; // 5 bit
-	
-	
-	
+	// at any input change
 	always @(*)
 	begin
 		case (Opcode)

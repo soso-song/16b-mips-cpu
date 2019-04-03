@@ -1,33 +1,25 @@
 module cpu_control(
-	switches,
-	keys,
-	clkspeed,
-	addressdisplay,
-	enableloop,
-	selectprog,
-	resetcpu,
-	resetpc,
-	runprog,
-	manualclk,
-	proginstruction,
-	backclk,
-	saveinstr
-	);				
-	input [17:0] switches;
-	input [3:0] keys;
-	
+	input [17:0] switches, // SW
+	input [3:0] keys, // KEY
+	output reg [2:0] clkspeed, // control the clock of the cpu
+	output reg [5:0] addressdisplay, // display a value in register at address
+	output reg enableloop, // if the program should loop from the last line to first
+	output reg [1:0] selectprog, // no longer usefull
+	output reg resetcpu, // reset the register values and program counter
+	output reg resetpc, // reset program counter
+	output reg runprog, // pause program
+	output reg manualclk, // button for clock for debug mode
+	output reg [15:0] proginstruction, // this function has been outdated by assembler
+	output reg backclk, // does not work
+	output reg saveinstr // does not work, just use the assembler lol
+	);
+	// Information:
+	// This module is meant to re-route the inputs for ease of use
+	// when debugging or running the cpu.
+	// mode selection
 	wire [1:0] cpumode;
 	assign cpumode = switches[17:16];
-	
-	output reg [2:0] clkspeed;
-	output reg [5:0] addressdisplay;
-	output reg enableloop;
-	output reg [1:0] selectprog;
-	output reg resetcpu, resetpc, runprog, manualclk;
-	
-	output reg [15:0] proginstruction;
-	output reg backclk, saveinstr;
-	
+	// at any change to input
 	always @(*)
 	begin
 		case (cpumode)

@@ -1,9 +1,10 @@
-module ALU(Ain, Bin, MODE, ALUout, FLAGzero);
-	input [15:0] Ain;
-	input [15:0] Bin;
-	input [3:0] MODE;
-	output FLAGzero;
-	output reg [15:0] ALUout;
+module ALU(
+	input [15:0] Ain, // input from mux a
+	input [15:0] Bin, // input from mux b
+	input [3:0] MODE, //control signals from ctrl unit
+	output reg [15:0] ALUout, // ALU output
+	output FLAGzero // zero flag to control unit
+	);
 	
 	always @(*) // declare always block
 	begin

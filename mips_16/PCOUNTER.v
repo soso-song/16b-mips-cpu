@@ -1,36 +1,42 @@
-module PCOUNTER(clk, Jaddr, Jflag, Caddr, Enloop, Clear, backclk);
-	input clk, Jflag, Enloop, Clear, backclk;
-	input [9:0] Jaddr;
-	output reg [9:0] Caddr;
-
+module PCOUNTER(
+	input clk, // input clk
+	input [9:0] Jaddr, // input jump address to jump to
+	input Jflag, // jump flag
+	output reg [9:0] Caddr, // current address at
+	input Enloop, // if should loop from last to first line
+	input Clear, // go back to line 0
+	input backclk // decrease program count
+	);
+	// update on clk or clear
 	always @(posedge clk or posedge backclk or posedge Clear)
 	begin
-		if (Clear == 1'b1) begin
+		if (Clear == 1'b1) begin // clear the value
 			Caddr = 10'd0;
 		end
-		else if (backclk == 1'b1) begin
+		else if (backclk == 1'b1) begin // back clk if possible
 			if (Caddr != 10'b0000000000) begin
 				Caddr <= Caddr - 1'b1;
 			end
 		end
-		else if(Jflag == 1'b1) begin
+		else if(Jflag == 1'b1) begin // jump to new address if jump flag
 			Caddr <= Jaddr;
 		end
-		else if(Caddr == 10'b1111111111) begin
+		else if(Caddr == 10'b1111111111) begin // loop if enabled
 			if(Enloop == 1'b1) begin
 				Caddr <= 10'd0;
 			end
 		end
 		else begin
-			Caddr <= Caddr + 1'b1;
+			Caddr <= Caddr + 1'b1; // count up
 		end
 	end
 endmodule
 
-module microcounter(clk, count);
-	input clk;
-	output reg [1:0] count;
-	
+module microcounter(
+	input clk, // input clk (stablized)
+	output reg [1:0] count // output current microcode count
+	);
+	// update on clk
 	always @(posedge clk)
 	begin
 		if (count == 2'b11) begin
@@ -42,10 +48,11 @@ module microcounter(clk, count);
 	end
 endmodule
 
-module stablizer(clkin, clkout);
-	input clkin;
-	output reg clkout;
-	
+module stablizer(
+	input clkin,
+	output reg clkout
+	);
+	// update on clk
 	always @(posedge clkin)
 	begin
 		if (clkout == 1'b1) begin
@@ -57,14 +64,16 @@ module stablizer(clkin, clkout);
 	end
 endmodule
 
-module RATEDIV(clkin, Rate, clkout, Clear);
-	input clkin, Clear;
-	input [2:0] Rate;
-	output clkout;
-	
+module RATEDIV(
+	input clkin,
+	input [2:0] Rate,
+	output clkout,
+	input Clear
+	);
+	// create register for current rate and count
 	reg [25:0] currRate;
 	reg [25:0] currCount = 26'd0;
-	
+	// select a rate
 	always @(Rate)
 	begin
 		case (Rate)
@@ -78,7 +87,7 @@ module RATEDIV(clkin, Rate, clkout, Clear);
 		3'b111: currRate = 26'd1; // 50,000,000hz
 		endcase
 	end
-	
+	// counter section
 	always @(posedge clkin or posedge Clear)
 	begin
 		if(Clear == 1'b1) begin
@@ -91,6 +100,6 @@ module RATEDIV(clkin, Rate, clkout, Clear);
 			currCount <= currCount - 1'b1;
 		end
 	end
-	
+	// generate clock pulse
 	assign clkout = (currCount == currRate)? 1:0;
 endmodule
