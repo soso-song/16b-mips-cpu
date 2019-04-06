@@ -23,7 +23,7 @@ module mips_16(
 	output VGA_SYNC_N,						//	VGA SYNC
 	output [9:0] VGA_R,   					//	VGA Red[9:0]
 	output [9:0] VGA_G,	 					//	VGA Green[9:0]
-	output [9:0] VGA_B,						//	VGA Blue[9:0]);
+	output [9:0] VGA_B						//	VGA Blue[9:0]);
 	);
 
 	//wires for the inputs from user

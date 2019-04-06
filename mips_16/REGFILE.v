@@ -11,6 +11,7 @@ module REGFILE(
 	input [4:0] Caddr,
 	output [15:0] Cdata
 	);
+	reg [5:0] i = 6'd0;
 	// create a register array of size 32
 	reg [15:0] register[31:0];
 	// update on clk input
@@ -20,9 +21,10 @@ module REGFILE(
 			register[Waddr] <= Wdata; // write data to register
 		end
 		else if (Reset == 1'b1) begin
-			for(int i = 0; i < 32; i ++) begin // reset all register values
-				register[i] = 16'd0;
+			for(i = 0; i < 32; i = i + 1) begin // reset all register values
+				register[i] <= 16'd0;
 			end
+			i <= 6'b0;
 		end
 	end
 	// set read values

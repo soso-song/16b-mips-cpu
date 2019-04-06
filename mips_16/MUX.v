@@ -2,7 +2,7 @@ module MUX2(
 	input [15:0] Ain, // mux inputs
 	input [15:0] Bin,
 	input Select, // control signal
-	output reg [15:0] Output // output value
+	output [15:0] Output // output value
 	);
 	// mux case
 	assign Output = (Select == 1'b0)? Ain : Bin;
