@@ -1,0 +1,233 @@
+CSCB58 Project Report: Winter 2019
+
+Team Member A
+-------------
+First Name: Zhifei
+Last Name: Song
+Student Number: 1004359026
+UofT E-mail Address: kyles.song@mail.utoronto.ca
+
+
+Team Member B
+-------------
+First Name: Kevin
+Last Name: Zhu
+Student Number: 1004891246
+UofT E-mail Address: kaiwen.zhu@mail.utoronto.ca
+
+Repo & Video
+------------
+<At the end of the project, provide links to your code repository and presentation video (and passwords if not public>
+See the project files at:
+	https://github.com/kaiwen-z/16b_mips_cpu
+
+Video of the CPU:
+	https://youtu.be/FNep4bpeVNs
+
+
+
+Project Plan
+--------
+
+Project Title: B58 MIPS CPU
+
+Provide a one-paragraph description of your project:
+	An 8 bit MIPS architecture based CPU that will implement RISC. The CPU will have simple
+	instructions and only integer operations. The goal is to have a completed CPU that can be
+	programmed in binary or assembly if there is time to implement an assembler and (Joe's)
+	text editor. We will also try to have some demo programs to run on the CPU including a simple
+	input-output program where an input from a mouse location is displayed on a screen (simple paint program).
+	The VGA module from lab6 will be used in conjunction with an input module for mouse and keyboard, since
+	the CPU is 16 bits, it should be able to access all pixels of the screen as an output.
+
+
+What is your plan for the first week?
+	Plan out a simple MIPS CPU and document its design process and creation.
+	Plan out the OPcode and how the CPU will operate.
+	Build all the modules required for the CPU:
+		ALU
+		Registers
+		RAM/ROM
+		Control unit
+	
+
+What is your plan for the second week?
+	Fix the VGA module from lab6 to interface with the CPU.
+	Create a simple serial input module for interfacing between mouse and keyboard.
+	Possibly build an assembler using joe’s text editor
+	Otherwise, program simple input to screen program (simple paint)
+
+
+What is your plan for the third week?
+	Add other programs to demo.
+
+
+What is your backup plan if things don’t work out as planned?
+
+	i) Simple and responsive hardware accelerated paint module that interfaces with the VGA
+	module we are given from lab6 and our own to be built a simple input-output module for mouse
+	and keyboard control. The paint module also has features such as inserting text into a location
+	and changing the color and size of the paint brush. Other features such as vector drawing can be
+	easily implemented with simple addition and multiplication.  This backup project is very flexible,
+	therefore if we don't have time to build everything, we will remove some function, for example,
+	the text editor or eraser, the basic goal is to make paint with mouse input
+	ii)  make text editor(by Joe) with various fonts
+	iii) make the last question on the midterm
+	iv) omit parts of the cpu user interface such as vga and keyboard input
+
+
+Weekly Reports
+--------------
+Week 1: 
+	So far the CPU architecture has been planned out, the control unit will control
+	some of the memory access read and write to and from the datapath however
+	there is also external memory that is seperate from the cpu which will allow
+	the introduction of coprocessors and other more complicated modules to be added
+	in the future.
+
+	Being a single cycle RISC processor, the instructions should all take a single
+	clock cycle, with the implementation of more complicated features such as
+	a stack datastructure being implemented software side in assembly. So there
+	will be no dedicated hardware to accomplish the common datastructures often found
+	within cpus such as the stack and the heap.
+
+	Further more, as a trade off from hardware complexity to software complexity
+	also comes trading off speed and full mips style instructions in the processor
+	for more simpler instructions and a larger array of registers at disposal.
+
+	The instructions are formatted as such, the first 6 bits is the opcode, and
+	10 bits are for addressing memory, branches, jumps and registers. For data
+	processing instructions, there is 5 bits per register address so we can have
+	32 registers. For branching and jumps and memory access, there are 10 bits
+	available, so we can have 1024 words of program memory and system memory.
+	This is a good trade off as the advantage of having large program memory will
+	increase the capabilities of RISC processors.
+
+	The planned amount of program memory will be 2048 bytes organized into 1024 words
+	as an instruction is 2 bytes.
+
+	branch and jump operations will not have an offset but rather a fixed value which
+	reduces the steps needed to execute the instruction.
+
+	In addition to the planning of the CPU, some modules will be tested in the
+	lab time. Modules such as the ALU of which we are still unsure how verilog
+	does signed and unsigned operations, and a specialized register file design.
+
+Week 2:
+	All of the cpu components were created and tested seperately to ensure that each component
+	works as intended. The max operating frequency of all the components were also tested on
+	testbenches to make sure that they could all work at the desired speed without any errors.
+	Then all of the components were linked together in the top level function with wires representing
+	the datapath.
+
+	Another control module was added between the user and the cpu so that interfacing with
+	the cpu becomes easier and the outputs are displayed appropriately.
+
+	An extra instruction was written in the cpu control unit to accomodate input from a
+	coprocessor. Due to this, the A multiplexer was changed from a 2 to 1 to a 3 to 2 mux.
+	This allows input to be read directly into the register file from a bus for processing.
+
+	The cpu was tested with a few simple programs such as counting the fibbonacci sequence
+	and counting up. They all worked flawlessly.
+
+	A further clock stablizer module was added to change the flickering output from the rate
+	divider to a steady clock and cpu instructions were broken down into micro instructions
+	namely fetch, execute, read/write, programcounter. to remove any possiblility of race
+	conditions occurring.
+
+	Since programming in binary is tedious, an assembly language along with an assembler
+	written in python was created to allow processing of assembly code directly into a
+	memory initialization file (.mif) which can be loaded onto the program memory in the
+	cpu without having to recompile the project. This allows for extremely fast programming
+	and testing of the cpu.
+
+	The program mode of the cpu will be removed as it is no longer nessecary having a working
+	assembler. There is no longer any need to program the cpu in binary using switches.
+
+	Further plans for the following week include writing another assembler that converts real
+	mips instructions into the custom mips instruction set, and writing demo programs on the
+	cpu that utilize a vga controller to output to a screen.
+
+Week 3:
+	All of the cpu instructions were tested to ensure that the cpu operates as designed.
+
+	A VGA controller was added at the top level module as a coprocessor to the cpu.
+	It can fetch data from the cpu's memory given an offeset in a designated memory location
+	to read from an array of objects to draw and then draw them on the screen.
+
+	To allow the vga controller to access memory quickly, the ram was changed from quartus
+	generated ram into a large dual read register file with the module name "cache".
+	This allows the vga to work asyncronously with the cpu memory.
+
+	An additional instruction was added (SI[register]) which allows input data from a bus
+	called wireAinput to be read directly into the cpu register file. This is currently
+	unused but exists for the purpose of allowing input from some external device like a
+	keyboard in the future.
+
+	Some demo programs were written and tested on the cpu. The working programs so far
+	are a counter, a fibbonacci sequence counter, bubble sort, and a program that colours
+	the screen blue one pixel at a time.
+
+	The user interface with the cpu during runtime was slightly improved. There is now a
+	debug mode that allows manual clocking. Also the current instruction being executed
+	is displayed on the red leds and the state of the microcounter is displayed on the
+	green leds.
+
+	Unfortunately we did not get keyboard input working or the ability to draw text onto
+	the screen. Despite looking at examples from previous years (notepad--), the text
+	drawing did not work since there was not enought time to complete the cpu with keyboard
+	input as well.
+
+	Also the mouse input was not completed, we later realized that handling mouse input is
+	difficult because each mouse is different, has different polling rates, and different
+	ways it sends its data. In desktop computers, mice usually come with driver software
+	preinstalled which already is beyond the scope of this project.
+	
+Week 4:
+	We succeeded in completing a functional 16 bit cpu with 33 instructions. The cpu
+	in the repository will include some documentation and explaination of how to operate
+	and program in the custom assembly language designed for the cpu. The architecture will
+	also be explained in detail so that any future users of the cpu will be able to
+	begin projects with ease. We hope that in the future, some students will expand upon this
+	project to create truly incredible embedded systems.
+
+Reason for this project
+-----------------------
+	The motivation behind this project was to learn more about cpu's and how they operate
+	on a circuit level.
+	Because many projects will only be able to do one thing, they will get boring after
+	some time, however a cpu can be programmed to do many things which will keep it interesting.
+
+	Also with a working cpu as a base, future students would be able to expand upon this
+	project and create much more amazing things.
+
+References
+----------
+	Modules from referenced sources:
+	- PROGMEM.v
+	- RAM.v
+	- vga_*
+	- black.mif
+
+	Modules that contain some code from references sources:
+	- mips_16 (debouncer, vga, hex display)
+
+	hex display:
+	We used hex display for the output of the cpu to the hex display
+	from register file.
+	https://q.utoronto.ca/courses/70399/files/2303620/download?verifier=nBII99U4ZjnAyWlA6Mnpop62JxB3OhNgOhLyOXD3&wrap=1
+	Usage as b58 students
+	Copyright 2019 uoft
+
+	VGA modules:
+	Used VGA adapter and the controller was modified to fit our needs. (includes black.mif)
+	https://q.utoronto.ca/courses/70399/files/2303553/download?verifier=ZZ4xZD9wTW9De7VZobLBPKZiqiRjgami8oPk6Imq&wrap=1
+	Usage as b58 students
+	Copyright 2019 uoft
+
+	RAM and PROGMEM:
+	Generated by quartus (RAM.v and PROGMEM.v) by altera IP catalog wizard.
+
+	debouncer module:
+	Button debouncer used directly in main module to debounce input.
+	https://www.eecs.umich.edu/courses/eecs270/270lab/270_docs/debounce.html
